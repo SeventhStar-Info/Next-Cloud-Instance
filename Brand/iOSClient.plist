@@ -49,6 +49,7 @@
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>seventhstar</string>
+		<string>nextcloudtalk</string>
 	</array>
 	<key>LSMinimumSystemVersion</key>
 	<string>12.3</string>

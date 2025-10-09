@@ -1,1 +1,27 @@
-<svg width="256" height="128" version="1.1" viewBox="0 0 256 128" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke-width="22"><circle cx="40" cy="64" r="26" stroke="#fff" fill="none"/><circle cx="216" cy="64" r="26" stroke="#fff" fill="none"/><circle cx="128" cy="64" r="46" stroke="#fff" fill="none"/></g></svg>
+<svg width="256" height="128" version="1.1" viewBox="0 0 256 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .text {
+        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+        font-size: 24px;
+        font-weight: 700;
+        fill: #ffffff;
+        text-anchor: middle;
+        letter-spacing: 2px;
+      }
+      .star {
+        fill: #ffffff;
+      }
+    </style>
+  </defs>
+  <g>
+    <!-- Top text: SEVENTH -->
+    <text x="128" y="35" class="text">SEVENTH</text>
+
+    <!-- Star symbol in middle -->
+    <polygon class="star" points="128,45 133,58 147,58 136,66 140,79 128,70 116,79 120,66 109,58 123,58"/>
+
+    <!-- Bottom text: STAR -->
+    <text x="128" y="105" class="text">STAR</text>
+  </g>
+</svg>

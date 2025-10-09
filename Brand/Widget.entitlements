@@ -6,13 +6,14 @@
 	<true/>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.it.twsweb.Crypto-Cloud</string>
+		<string>group.za.co.seventhstar</string>
+		<string>group.za.co.seventhstar.apps</string>
 	</array>
 	<key>com.apple.security.network.client</key>
 	<true/>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>$(AppIdentifierPrefix)it.twsweb.Crypto-Cloud</string>
+		<string>$(AppIdentifierPrefix)za.co.seventhstar.shared</string>
 	</array>
 </dict>
 </plist>

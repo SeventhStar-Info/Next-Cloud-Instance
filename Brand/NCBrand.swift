@@ -28,7 +28,7 @@ final class NCBrandOptions: @unchecked Sendable {
     var textCopyrightNextcloudiOS: String = "Seventh Star for iOS %@ © 2025"
     var textCopyrightNextcloudServer: String = "Based on Nextcloud Server %@"
     var loginBaseUrl: String = "https://seventhstar.co.za"
-    var pushNotificationServerProxy: String = ""
+    var pushNotificationServerProxy: String = "https://push-notifications.nextcloud.com"
     var linkLoginHost: String = "https://seventhstar.co.za"
     var linkloginPreferredProviders: String = "https://seventhstar.co.za"
     var webLoginAutenticationProtocol: String = "seventhstar://"                                        // example "abc://"
