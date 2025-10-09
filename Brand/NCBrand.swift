@@ -23,26 +23,26 @@ let userAgent: String = {
 final class NCBrandOptions: @unchecked Sendable {
     static let shared = NCBrandOptions()
 
-    var brand: String = "Nextcloud"
-    var brandUserAgent: String = ""
-    var textCopyrightNextcloudiOS: String = "Nextcloud Matheria for iOS %@ © 2025"
-    var textCopyrightNextcloudServer: String = "Nextcloud Server %@"
-    var loginBaseUrl: String = "https://cloud.nextcloud.com"
+    var brand: String = "Seventh Star"
+    var brandUserAgent: String = "SeventhStar"
+    var textCopyrightNextcloudiOS: String = "Seventh Star for iOS %@ © 2025"
+    var textCopyrightNextcloudServer: String = "Based on Nextcloud Server %@"
+    var loginBaseUrl: String = "https://seventhstar.co.za"
     var pushNotificationServerProxy: String = ""
-    var linkLoginHost: String = "https://nextcloud.com/install"
-    var linkloginPreferredProviders: String = "https://nextcloud.com/signup-ios"
-    var webLoginAutenticationProtocol: String = "nc://"                                        // example "abc://"
-    var privacy: String = "https://nextcloud.com/privacy"
-    var sourceCode: String = "https://github.com/nextcloud/ios"
+    var linkLoginHost: String = "https://seventhstar.co.za"
+    var linkloginPreferredProviders: String = "https://seventhstar.co.za"
+    var webLoginAutenticationProtocol: String = "seventhstar://"                                        // example "abc://"
+    var privacy: String = "https://seventhstar.co.za/privacy"
+    var sourceCode: String = "https://github.com/SeventhStar-Info/Next-Cloud-Instance"
     var mobileconfig: String = "/remote.php/dav/provisioning/apple-provisioning.mobileconfig"
-    var appStoreUrl: String = "https://apps.apple.com/in/app/nextcloud/id1125420102"
+    var appStoreUrl: String = "https://seventhstar.co.za"
 
     // Auto Upload default folder
     var folderDefaultAutoUpload: String = "Photos"
 
     // Capabilities Group
-    var capabilitiesGroup: String = "group.it.twsweb.Crypto-Cloud"
-    var capabilitiesGroupApps: String = "group.com.nextcloud.apps"
+    var capabilitiesGroup: String = "group.za.co.seventhstar"
+    var capabilitiesGroupApps: String = "group.za.co.seventhstar.apps"
 
     // BRAND ONLY
     var use_AppConfig: Bool = false                                                         // Don't touch me !!
@@ -117,10 +117,9 @@ final class NCBrandOptions: @unchecked Sendable {
         }
 
         if pushNotificationServerProxy.isEmpty,
-            brand == "Nextcloud" {
-            pushNotificationServerProxy = "https://push-notifications.nextcloud.com"
-            // DEBUG SERVER PUSH
-            // pushNotificationServerProxy = "https://c0004.customerpush.nextcloud.com"
+            brand == "Seventh Star" {
+            pushNotificationServerProxy = ""
+            // Configure push notification server if needed
         }
     }
 
@@ -132,8 +131,8 @@ final class NCBrandOptions: @unchecked Sendable {
 final class NCBrandColor: @unchecked Sendable {
     static let shared = NCBrandColor()
 
-    // This is rewrited from customet theme, default is Nextcloud color
-    let customer: UIColor = UIColor(red: 0.0 / 255.0, green: 130.0 / 255.0, blue: 201.0 / 255.0, alpha: 1.0)         // Nextcloud : #0082C9
+    // This is rewrited from customet theme, default is Seventh Star red
+    let customer: UIColor = UIColor(red: 198.0 / 255.0, green: 40.0 / 255.0, blue: 40.0 / 255.0, alpha: 1.0)         // Seventh Star : #C62828
     var customerText: UIColor = .white
 
     // INTERNAL DEFINE COLORS
