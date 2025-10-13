@@ -9,7 +9,7 @@ let userAgent: String = {
     let appVersion: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
     // Original Nextcloud useragent "Mozilla/5.0 (iOS) Nextcloud-iOS/\(appVersion)-Nextcloud"
     let suffixBrand = NCBrandOptions.shared.brandUserAgent.isEmpty ? "" : "-\(NCBrandOptions.shared.brandUserAgent)"
-    return "Mozilla/5.0 (iOS) Nextcloud-iOS/\(appVersion)\(suffixBrand)"
+    return "Mozilla/5.0 (iOS) Seventh-Star-iOS/\(appVersion)\(suffixBrand)"
 }()
 
  /*
@@ -24,7 +24,7 @@ final class NCBrandOptions: @unchecked Sendable {
     static let shared = NCBrandOptions()
 
     var brand: String = "Seventh Star"
-    var brandUserAgent: String = "SeventhStar"
+    var brandUserAgent: String = "Seventh-Star"
     var textCopyrightNextcloudiOS: String = "Seventh Star for iOS %@ © 2025"
     var textCopyrightNextcloudServer: String = "Based on Nextcloud Server %@"
     var loginBaseUrl: String = "https://seventhstar.co.za"
