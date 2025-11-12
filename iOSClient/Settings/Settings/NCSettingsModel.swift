@@ -54,7 +54,7 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
         resetWrongAttempts = keychain.resetAppCounterFail
         accountRequest = keychain.accountRequest
         footerApp = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility().getVersionBuild()) + "\n\n"
-        footerServer = String(format: NCBrandOptions.shared.textCopyrightNextcloudServer, capabilities.serverVersion) + "\n"
+        footerServer = ""  // Hide "Based on Nextcloud Server" for Seventh Star branding
         footerSlogan = capabilities.themingName + " - " + capabilities.themingSlogan + "\n\n"
     }
 

@@ -799,7 +799,6 @@
 		F7A3DB912DDE23B5008F7EC8 /* NCDebouncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A3DB8F2DDE238C008F7EC8 /* NCDebouncer.swift */; };
 		F7A3DB922DDE23B5008F7EC8 /* NCDebouncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A3DB8F2DDE238C008F7EC8 /* NCDebouncer.swift */; };
 		F7A3DB932DDE23B5008F7EC8 /* NCDebouncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A3DB8F2DDE238C008F7EC8 /* NCDebouncer.swift */; };
-		F7A48415297028FC00BD1B49 /* Nextcloud Hub.png in Resources */ = {isa = PBXBuildFile; fileRef = F7A48414297028FC00BD1B49 /* Nextcloud Hub.png */; };
 		F7A509252C26BD5D00326106 /* NCCreateDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A509242C26BD5D00326106 /* NCCreateDocument.swift */; };
 		F7A509262C26D95D00326106 /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = F7160A812BE933390034DCB3 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		F7A560422AE1593700BE8FD6 /* NCOperationSaveLivePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A560412AE1593700BE8FD6 /* NCOperationSaveLivePhoto.swift */; };
@@ -1701,7 +1700,6 @@
 		F7A03E342D427308007AA677 /* NCMainNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMainNavigationController.swift; sourceTree = "<group>"; };
 		F7A0D1342591FBC5008F8A13 /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
 		F7A3DB8F2DDE238C008F7EC8 /* NCDebouncer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCDebouncer.swift; sourceTree = "<group>"; };
-		F7A48414297028FC00BD1B49 /* Nextcloud Hub.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Nextcloud Hub.png"; sourceTree = SOURCE_ROOT; };
 		F7A509242C26BD5D00326106 /* NCCreateDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCreateDocument.swift; sourceTree = "<group>"; };
 		F7A560412AE1593700BE8FD6 /* NCOperationSaveLivePhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCOperationSaveLivePhoto.swift; sourceTree = "<group>"; };
 		F7A573682E190377009C9257 /* NCShareExtensionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareExtensionData.swift; sourceTree = "<group>"; };
@@ -3410,7 +3408,6 @@
 			isa = PBXGroup;
 			children = (
 				F7AC9349296193050002BC0F /* Reasons to use Nextcloud.pdf */,
-				F7A48414297028FC00BD1B49 /* Nextcloud Hub.png */,
 				F7F4F0FB27ECDBDA008676F9 /* Font */,
 				F72B60941A24F04E004EF66F /* Localizations */,
 			);
@@ -4078,7 +4075,6 @@
 				F75D901F2D2BE12E003E740B /* NCRecommendationsCell.xib in Resources */,
 				F76032A0252F0F8E0015A421 /* NCTransferCell.xib in Resources */,
 				F7F4F10527ECDBDB008676F9 /* Inconsolata-SemiBold.ttf in Resources */,
-				F7A48415297028FC00BD1B49 /* Nextcloud Hub.png in Resources */,
 				F74C0437253F1CDC009762AB /* NCShares.storyboard in Resources */,
 				F7F4F10C27ECDBDB008676F9 /* Inconsolata-Regular.ttf in Resources */,
 				F7B8B83025681C3400967775 /* GoogleService-Info.plist in Resources */,
@@ -5456,7 +5452,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = NKUJUXUJ3B;
+				DEVELOPMENT_TEAM = 57LTGD4MF4;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -5506,7 +5502,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = NKUJUXUJ3B;
+				DEVELOPMENT_TEAM = 57LTGD4MF4;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -5553,7 +5549,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = NKUJUXUJ3B;
+				DEVELOPMENT_TEAM = 57LTGD4MF4;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -5602,7 +5598,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = NKUJUXUJ3B;
+				DEVELOPMENT_TEAM = 57LTGD4MF4;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -5867,7 +5863,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/iOSClient.entitlements";
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = NKUJUXUJ3B;
+				DEVELOPMENT_TEAM = 57LTGD4MF4;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/iOSClient.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -5891,7 +5887,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/Brand/iOSClient.entitlements";
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = NKUJUXUJ3B;
+				DEVELOPMENT_TEAM = 57LTGD4MF4;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/iOSClient.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -6023,7 +6019,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = NKUJUXUJ3B;
+				DEVELOPMENT_TEAM = 57LTGD4MF4;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_TESTING_SEARCH_PATHS = YES;
@@ -6089,7 +6085,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = NKUJUXUJ3B;
+				DEVELOPMENT_TEAM = 57LTGD4MF4;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_TESTING_SEARCH_PATHS = YES;

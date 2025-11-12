@@ -32,7 +32,7 @@ final class NCBrandOptions: @unchecked Sendable {
     var linkLoginHost: String = "https://seventhstar.co.za"
     var linkloginPreferredProviders: String = "https://seventhstar.co.za"
     var webLoginAutenticationProtocol: String = "seventhstar://"                                        // example "abc://"
-    var privacy: String = "https://seventhstar.co.za/privacy"
+    var privacy: String = "https://seventhstar.co.za/terms-of-service/"
     var sourceCode: String = "https://github.com/SeventhStar-Info/Next-Cloud-Instance"
     var mobileconfig: String = "/remote.php/dav/provisioning/apple-provisioning.mobileconfig"
     var appStoreUrl: String = "https://seventhstar.co.za"
@@ -58,7 +58,7 @@ final class NCBrandOptions: @unchecked Sendable {
     var disable_crash_service: Bool = false
     var disable_log: Bool = false
     var disable_mobileconfig: Bool = false  
-    var disable_show_more_nextcloud_apps_in_settings: Bool = false
+    var disable_show_more_nextcloud_apps_in_settings: Bool = true  // Hide More Apps for Seventh Star branding
     var doNotAskPasscodeAtStartup: Bool = false
     var disable_source_code_in_settings: Bool = false
     var enforce_passcode_lock = false

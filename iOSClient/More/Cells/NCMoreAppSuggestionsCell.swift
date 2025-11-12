@@ -56,6 +56,7 @@ class NCMoreAppSuggestionsCell: BaseNCMoreCell {
         }
 
         assistantView.isHidden = !capabilities.assistantEnabled
+        notesView.isHidden = true  // Hide Notes for Seventh Star branding
         self.controller = controller
     }
 
