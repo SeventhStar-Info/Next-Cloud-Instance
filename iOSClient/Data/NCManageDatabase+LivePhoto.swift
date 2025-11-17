@@ -30,36 +30,37 @@ extension NCManageDatabase {
 
     // MARK: - Realm Write
 
-    func setLivePhotoImage(account: String, serverUrlFileName: String, fileId: String) async {
-        let serverUrlFileNameNoExt = (serverUrlFileName as NSString).deletingPathExtension
-        let primaryKey = account + serverUrlFileNameNoExt
-
-        await performRealmWriteAsync { realm in
-            if let result = realm.object(ofType: tableLivePhoto.self, forPrimaryKey: primaryKey) {
-                result.serverUrlFileNameImage = serverUrlFileName
-                result.fileIdImage = fileId
-            } else {
-                let addObject = tableLivePhoto(account: account, serverUrlFileNameNoExt: serverUrlFileNameNoExt)
-                addObject.serverUrlFileNameImage = serverUrlFileName
-                addObject.fileIdImage = fileId
-                realm.add(addObject, update: .all)
-            }
+    func setLivePhotoVideo(metadatas: [tableMetadata]) async {
+        guard !metadatas.isEmpty else {
+            return
         }
-    }
 
-    func setLivePhotoVideo(account: String, serverUrlFileName: String, fileId: String) async {
-        let serverUrlFileNameNoExt = (serverUrlFileName as NSString).deletingPathExtension
-        let primaryKey = account + serverUrlFileNameNoExt
-
-        await performRealmWriteAsync { realm in
-            if let result = realm.object(ofType: tableLivePhoto.self, forPrimaryKey: primaryKey) {
-                result.serverUrlFileNameVideo = serverUrlFileName
-                result.fileIdVideo = fileId
-            } else {
-                let addObject = tableLivePhoto(account: account, serverUrlFileNameNoExt: serverUrlFileNameNoExt)
-                addObject.serverUrlFileNameVideo = serverUrlFileName
-                addObject.fileIdVideo = fileId
-                realm.add(addObject, update: .all)
+        await core.performRealmWriteAsync { realm in
+            for metadata in metadatas {
+                let serverUrlFileNameNoExt = (metadata.serverUrlFileName as NSString).deletingPathExtension
+                let primaryKey = metadata.account + serverUrlFileNameNoExt
+                if let result = realm.object(ofType: tableLivePhoto.self, forPrimaryKey: primaryKey) {
+                    if metadata.isVideo {
+                        // Update existing (only the provided fields)
+                        result.serverUrlFileNameVideo = metadata.serverUrlFileName
+                        result.fileIdVideo = metadata.fileId
+                    } else if metadata.isImage {
+                        result.serverUrlFileNameImage = metadata.serverUrlFileName
+                        result.fileIdImage = metadata.fileId
+                    }
+                } else {
+                    // Insert new — ensure the initializer sets the same PK used above
+                    let addObject = tableLivePhoto(account: metadata.account, serverUrlFileNameNoExt: serverUrlFileNameNoExt)
+                    if metadata.isVideo {
+                        addObject.serverUrlFileNameVideo = metadata.serverUrlFileName
+                        addObject.fileIdVideo = metadata.fileId
+                        realm.add(addObject, update: .modified)
+                    } else if metadata.isImage {
+                        addObject.serverUrlFileNameImage = metadata.serverUrlFileName
+                        addObject.fileIdImage = metadata.fileId
+                        realm.add(addObject, update: .modified)
+                    }
+                }
             }
         }
     }
@@ -67,7 +68,7 @@ extension NCManageDatabase {
     func deleteLivePhoto(account: String, serverUrlFileNameNoExt: String) async {
         let primaryKey = account + serverUrlFileNameNoExt
 
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             if let result = realm.object(ofType: tableLivePhoto.self, forPrimaryKey: primaryKey) {
                 realm.delete(result)
             }
@@ -75,7 +76,7 @@ extension NCManageDatabase {
     }
 
     func deleteLivePhotoError() async {
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             let results = realm.objects(tableLivePhoto.self)
                 .where {
                     $0.errorCount >= 3
@@ -87,7 +88,7 @@ extension NCManageDatabase {
     func setLivePhotoError(account: String, serverUrlFileNameNoExt: String) async {
         let primaryKey = account + serverUrlFileNameNoExt
 
-        await performRealmWriteAsync { realm in
+        await core.performRealmWriteAsync { realm in
             if let result = realm.object(ofType: tableLivePhoto.self, forPrimaryKey: primaryKey) {
                 result.errorCount = result.errorCount + 1
             }
@@ -98,7 +99,7 @@ extension NCManageDatabase {
 
     // swiftlint:disable empty_string
     func getLivePhotos(account: String) async -> [tableLivePhoto]? {
-        await performRealmReadAsync { realm in
+        await core.performRealmReadAsync { realm in
             let results = realm.objects(tableLivePhoto.self)
                 .where {
                     $0.account == account &&

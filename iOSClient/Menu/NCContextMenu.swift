@@ -45,7 +45,7 @@ class NCContextMenu: NSObject {
                                 NSLocalizedString("_remove_favorites_", comment: "") :
                                 NSLocalizedString("_add_favorites_", comment: ""),
                                 image: utility.loadImage(named: self.metadata.favorite ? "star.slash" : "star", colors: [NCBrandColor.shared.yellowFavorite])) { _ in
-            self.networking.favoriteMetadata(self.metadata) { error in
+            self.networking.setStatusWaitFavorite(self.metadata) { error in
                 if error != .success {
                     NCContentPresenter().showError(error: error)
                 }
@@ -57,10 +57,12 @@ class NCContextMenu: NSObject {
             if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
                 Task {
                     await self.networking.transferDispatcher.notifyAllDelegates { delegate in
-                        let metadata = self.metadata.detachedCopy()
-                        metadata.sessionSelector = self.global.selectorOpenIn
                         delegate.transferChange(status: self.global.networkingStatusDownloaded,
-                                                metadata: metadata,
+                                                account: self.metadata.account,
+                                                serverUrl: self.metadata.serverUrl,
+                                                selector: self.global.selectorOpenIn,
+                                                ocId: self.metadata.ocId,
+                                                destination: nil,
                                                 error: .success)
                     }
                 }
@@ -109,10 +111,12 @@ class NCContextMenu: NSObject {
             Task { @MainActor in
                 if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
                     await self.networking.transferDispatcher.notifyAllDelegates { delegate in
-                        let metadata = self.metadata.detachedCopy()
-                        metadata.sessionSelector = self.global.selectorLoadFileQuickLook
                         delegate.transferChange(status: self.global.networkingStatusDownloaded,
-                                                metadata: metadata,
+                                                account: self.metadata.account,
+                                                serverUrl: self.metadata.serverUrl,
+                                                selector: self.global.selectorLoadFileQuickLook,
+                                                ocId: self.metadata.ocId,
+                                                destination: nil,
                                                 error: .success)
                     }
                 } else {
@@ -171,13 +175,16 @@ class NCContextMenu: NSObject {
         let deleteConfirmLocal = UIAction(title: NSLocalizedString("_remove_local_file_", comment: ""),
                                           image: utility.loadImage(named: "trash"), attributes: .destructive) { _ in
             Task {
-                var metadatasError: [tableMetadata: NKError] = [:]
                 let error = await self.networking.deleteCache(self.metadata, sceneIdentifier: self.sceneIdentifier)
-                metadatasError[self.metadata.detachedCopy()] = error
 
                 await self.networking.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusDelete,
-                                            metadatasError: metadatasError)
+                    delegate.transferChange(status: NCGlobal.shared.networkingStatusDelete,
+                                            account: self.metadata.account,
+                                            serverUrl: self.metadata.serverUrl,
+                                            selector: self.metadata.sessionSelector,
+                                            ocId: self.metadata.ocId,
+                                            destination: nil,
+                                            error: error)
                 }
             }
         }

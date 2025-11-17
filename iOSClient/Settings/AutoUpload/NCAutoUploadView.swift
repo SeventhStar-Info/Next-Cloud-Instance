@@ -30,9 +30,6 @@ struct NCAutoUploadView: View {
         .onAppear {
             model.onViewAppear()
         }
-        .onDisappear {
-            model.onViewDisappear()
-        }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
             model.checkPermission()
         }
@@ -71,7 +68,9 @@ struct NCAutoUploadView: View {
                                 .opacity(model.autoUploadStart ? 0.15 : 1)
                             Text(NSLocalizedString("_destination_", comment: ""))
                                 .opacity(model.autoUploadStart ? 0.5 : 1)
+                                .tint(.primary)
                             Text(model.returnPath())
+                                .tint(.primary)
                                 .frame(maxWidth: .infinity, alignment: .trailing)
                                 .opacity(model.autoUploadStart ? 0.5 : 1)
                         }
@@ -91,8 +90,10 @@ struct NCAutoUploadView: View {
                                     .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                                     .opacity(model.autoUploadStart ? 0.3 : 1)
                                 Text(NSLocalizedString("_upload_from_", comment: ""))
+                                    .tint(.primary)
                                 Text(NSLocalizedString(model.createAlbumTitle(autoUploadAlbumIds: albumModel.autoUploadAlbumIds), comment: ""))
                                     .frame(maxWidth: .infinity, alignment: .trailing)
+                                    .tint(.primary)
                             }
                         })
                     }

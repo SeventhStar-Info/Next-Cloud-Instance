@@ -24,7 +24,7 @@ struct Maintenance: View {
                     .frame(width: 80, height: 80)
                     .foregroundColor(.white)
 
-                Text("Ottimizzazione in corso...")
+                Text("_opt_in_pro_")
                     .font(.headline)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
@@ -44,7 +44,6 @@ struct Maintenance: View {
     }
 
     /// Executes the maintenance.
-    ///
     private func startMaintenance() async {
         do {
             try NCManageDatabase.shared.compactRealm()

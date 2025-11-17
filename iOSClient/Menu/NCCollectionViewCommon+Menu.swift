@@ -224,7 +224,7 @@ extension NCCollectionViewCommon {
                     order: 50,
                     sender: sender,
                     action: { _ in
-                        NCNetworking.shared.favoriteMetadata(metadata) { error in
+                        NCNetworking.shared.setStatusWaitFavorite(metadata) { error in
                             if error != .success {
                                 NCContentPresenter().showError(error: error)
                             }
@@ -287,10 +287,12 @@ extension NCCollectionViewCommon {
                         Task {
                             if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                                    let metadata = metadata.detachedCopy()
-                                    metadata.sessionSelector = NCGlobal.shared.selectorSaveAsScan
                                     delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
-                                                            metadata: metadata,
+                                                            account: metadata.account,
+                                                            serverUrl: metadata.serverUrl,
+                                                            selector: NCGlobal.shared.selectorSaveAsScan,
+                                                            ocId: metadata.ocId,
+                                                            destination: nil,
                                                             error: .success)
                                 }
                             } else {
@@ -327,7 +329,7 @@ extension NCCollectionViewCommon {
                                 return
                             }
 
-                            NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew)
+                            NCNetworking.shared.setStatusWaitRename(metadata, fileNameNew: fileNameNew)
                         }
                     }
                 )
@@ -356,10 +358,12 @@ extension NCCollectionViewCommon {
                         Task {
                             if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                                    let metadata = metadata.detachedCopy()
-                                    metadata.sessionSelector = NCGlobal.shared.selectorLoadFileQuickLook
                                     delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
-                                                            metadata: metadata,
+                                                            account: metadata.account,
+                                                            serverUrl: metadata.serverUrl,
+                                                            selector: NCGlobal.shared.selectorLoadFileQuickLook,
+                                                            ocId: metadata.ocId,
+                                                            destination: nil,
                                                             error: .success)
                                 }
                             } else {

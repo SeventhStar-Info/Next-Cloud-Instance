@@ -149,7 +149,7 @@ class NCShareNetworking: NSObject {
                 } else {
                     if case let .limited(limit, _) = downloadLimit,
                        capabilities.fileSharingDownloadLimit,
-                       shareable.shareType == NCShareCommon.shareTypeLink,
+                       shareable.shareType == NKShare.ShareType.publicLink.rawValue,
                        shareable.itemType == NCShareCommon.itemTypeFile {
                         self.setShareDownloadLimit(limit, token: share.token)
                     }
@@ -157,7 +157,7 @@ class NCShareNetworking: NSObject {
 
                 Task {
                     await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                        delegate.transferRequestData(serverUrl: self.metadata.serverUrl)
+                        delegate.transferReloadData(serverUrl: self.metadata.serverUrl, requestData: true, status: nil)
                     }
                 }
             } else {
@@ -186,7 +186,7 @@ class NCShareNetworking: NSObject {
 
                 Task {
                     await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                        delegate.transferRequestData(serverUrl: self.metadata.serverUrl)
+                        delegate.transferReloadData(serverUrl: self.metadata.serverUrl, requestData: true, status: nil)
                     }
                 }
             } else {
@@ -215,7 +215,7 @@ class NCShareNetworking: NSObject {
                 self.delegate?.readShareCompleted()
 
                 if capabilities.fileSharingDownloadLimit,
-                   shareable.shareType == NCShareCommon.shareTypeLink,
+                   shareable.shareType == NKShare.ShareType.publicLink.rawValue,
                    shareable.itemType == NCShareCommon.itemTypeFile {
                     if case let .limited(limit, _) = downloadLimit {
                         self.setShareDownloadLimit(limit, token: share.token)
@@ -226,7 +226,7 @@ class NCShareNetworking: NSObject {
 
                 Task {
                     await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                        delegate.transferRequestData(serverUrl: self.metadata.serverUrl)
+                        delegate.transferReloadData(serverUrl: self.metadata.serverUrl, requestData: true, status: nil)
                     }
                 }
             } else {

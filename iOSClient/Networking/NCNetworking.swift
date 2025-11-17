@@ -2,12 +2,15 @@
 // SPDX-FileCopyrightText: 2019 Marino Faggiana
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import UIKit
+#if !EXTENSION_FILE_PROVIDER_EXTENSION
 import OpenSSL
-import NextcloudKit
-import Alamofire
 import Queuer
 import SwiftUI
+#endif
+
+import UIKit
+import NextcloudKit
+import Alamofire
 
 @objc protocol ClientCertificateDelegate {
     func onIncorrectPassword()
@@ -16,32 +19,36 @@ import SwiftUI
 
 protocol NCTransferDelegate: AnyObject {
     var sceneIdentifier: String { get }
+
+    func transferChange(status: String,
+                        account: String,
+                        serverUrl: String,
+                        selector: String?,
+                        ocId: String,
+                        destination: String?,
+                        error: NKError)
+    func transferReloadData(serverUrl: String?, requestData: Bool, status: Int?)
     func transferProgressDidUpdate(progress: Float,
                                    totalBytes: Int64,
                                    totalBytesExpected: Int64,
                                    fileName: String,
                                    serverUrl: String)
-
-    func transferChange(status: String, metadata: tableMetadata, error: NKError)
-    func transferChange(status: String, metadatasError: [tableMetadata: NKError])
-    func transferReloadData(serverUrl: String?, status: Int?)
-    func transferRequestData(serverUrl: String?)
-    func transferCopy(metadata: tableMetadata, destination: String, error: NKError)
-    func transferMove(metadata: tableMetadata, destination: String, error: NKError)
 }
 
 extension NCTransferDelegate {
+    func transferChange(status: String,
+                        account: String,
+                        serverUrl: String,
+                        selector: String?,
+                        ocId: String,
+                        destination: String?,
+                        error: NKError) {}
+    func transferReloadData(serverUrl: String?, requestData: Bool, status: Int?) {}
     func transferProgressDidUpdate(progress: Float,
                                    totalBytes: Int64,
                                    totalBytesExpected: Int64,
                                    fileName: String,
                                    serverUrl: String) {}
-    func transferChange(status: String, metadata: tableMetadata, error: NKError) {}
-    func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {}
-    func transferReloadData(serverUrl: String?, status: Int?) {}
-    func transferRequestData(serverUrl: String?) {}
-    func transferCopy(metadata: tableMetadata, destination: String, error: NKError) {}
-    func transferMove(metadata: tableMetadata, destination: String, error: NKError) {}
 }
 
 /// Actor-based delegate dispatcher using weak references.
@@ -61,29 +68,24 @@ actor NCTransferDelegateDispatcher {
 
     /// Notifies all delegates.
     func notifyAllDelegates(_ block: (NCTransferDelegate) -> Void) {
-        let delegatesCopy = transferDelegates.allObjects
+        let delegatesCopy = transferDelegates.allObjects.compactMap { $0 as? NCTransferDelegate }
         for delegate in delegatesCopy {
-            if let delegate = delegate as? NCTransferDelegate {
-                block(delegate)
-            }
+            block(delegate)
         }
     }
 
     func notifyAllDelegatesAsync(_ block: @escaping (NCTransferDelegate) async -> Void) async {
-        let delegatesCopy = transferDelegates.allObjects
+        let delegatesCopy = transferDelegates.allObjects.compactMap { $0 as? NCTransferDelegate }
         for delegate in delegatesCopy {
-            if let delegate = delegate as? NCTransferDelegate {
-                await block(delegate)
-            }
+            await block(delegate)
         }
     }
 
     /// Notifies the delegate for a specific scene.
     func notifyDelegate(forScene sceneIdentifier: String, _ block: (NCTransferDelegate) -> Void) {
-        let delegatesCopy = transferDelegates.allObjects
+        let delegatesCopy = transferDelegates.allObjects.compactMap { $0 as? NCTransferDelegate }
         for delegate in delegatesCopy {
-            if let delegate = delegate as? NCTransferDelegate,
-               delegate.sceneIdentifier == sceneIdentifier {
+            if delegate.sceneIdentifier == sceneIdentifier {
                 block(delegate)
             }
         }
@@ -93,9 +95,8 @@ actor NCTransferDelegateDispatcher {
     func notifyDelegates(forScene sceneIdentifier: String,
                          matching: (NCTransferDelegate) -> Void,
                          others: (NCTransferDelegate) -> Void) {
-        let delegatesCopy = transferDelegates.allObjects
+        let delegatesCopy = transferDelegates.allObjects.compactMap { $0 as? NCTransferDelegate }
         for delegate in delegatesCopy {
-            guard let delegate = delegate as? NCTransferDelegate else { continue }
             if delegate.sceneIdentifier == sceneIdentifier {
                 matching(delegate)
             } else {
@@ -238,8 +239,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         var serverUrl: String
     }
 
-    let networkingTasks = NetworkingTasks()
-
     let sessionDownload = NextcloudKit.shared.nkCommonInstance.identifierSessionDownload
     let sessionDownloadBackground = NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground
     let sessionDownloadBackgroundExt = NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackgroundExt
@@ -250,7 +249,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     let sessionUploadBackgroundExt = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundExt
 
     let utilityFileSystem = NCUtilityFileSystem()
-    let utility = NCUtility()
     let global = NCGlobal.shared
     let backgroundSession = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance)
 
@@ -273,9 +271,13 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     // Capabilities
     var capabilities = ThreadSafeDictionary<String, NKCapabilities.Capabilities>()
 
+    // Actors
     let transferDispatcher = NCTransferDelegateDispatcher()
-
+    let networkingTasks = NetworkingTasks()
     let progressQuantizer = ProgressQuantizer()
+
+#if !EXTENSION
+    let metadataTranfersSuccess = NCMetadataTranfersSuccess()
 
     // OPERATIONQUEUE
     let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
@@ -284,30 +286,24 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     let unifiedSearchQueue = Queuer(name: "unifiedSearchQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     let saveLivePhotoQueue = Queuer(name: "saveLivePhotoQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     let downloadAvatarQueue = Queuer(name: "downloadAvatarQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
+#endif
 
     // MARK: - init
 
     init() { }
 
-    // MARK: - Communication Delegate
-
-    func networkReachabilityObserver(_ typeReachability: NKTypeReachability) {
-        if typeReachability == NKTypeReachability.reachableCellular || typeReachability == NKTypeReachability.reachableEthernetOrWiFi {
-            lastReachability = true
-        } else {
-            if lastReachability {
-                let error = NKError(errorCode: global.errorNetworkNotAvailable, errorDescription: "")
-                NCContentPresenter().messageNotification("_network_not_available_", error: error, delay: global.dismissAfterSecond, type: NCContentPresenter.messageType.info)
-            }
-            lastReachability = false
-        }
-        networkReachability = typeReachability
-        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterNetworkReachability, userInfo: nil)
-    }
-
     func authenticationChallenge(_ session: URLSession,
                                  didReceive challenge: URLAuthenticationChallenge,
                                  completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+#if EXTENSION
+        if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
+           let serverTrust = challenge.protectionSpace.serverTrust {
+            let credential = URLCredential(trust: serverTrust)
+            completionHandler(.useCredential, credential)
+        } else {
+            completionHandler(.performDefaultHandling, nil)
+        }
+#else
         if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodClientCertificate {
             if let p12Data = self.p12Data,
                let cert = (p12Data, self.p12Password) as? UserCertificate,
@@ -323,6 +319,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         } else {
             self.checkTrustedChallenge(session, didReceive: challenge, completionHandler: completionHandler)
         }
+#endif
     }
 
     func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
@@ -342,6 +339,16 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     public func checkTrustedChallenge(_ session: URLSession,
                                       didReceive challenge: URLAuthenticationChallenge,
                                       completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+#if EXTENSION
+        DispatchQueue.main.async {
+            if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
+               let trust = challenge.protectionSpace.serverTrust {
+                completionHandler(.useCredential, URLCredential(trust: trust))
+            } else {
+                completionHandler(.performDefaultHandling, nil)
+            }
+        }
+#else
         let protectionSpace = challenge.protectionSpace
         let directoryCertificate = utilityFileSystem.directoryCertificates
         let host = protectionSpace.host
@@ -379,15 +386,15 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
                 if isTrusted {
                     completionHandler(.useCredential, URLCredential(trust: trust))
                 } else {
-    #if !EXTENSION
                     (UIApplication.shared.delegate as? AppDelegate)?.trustCertificateError(host: host)
-    #endif
                     completionHandler(.performDefaultHandling, nil)
                 }
             }
         }
+        #endif
     }
 
+#if !EXTENSION
     func writeCertificate(host: String) {
         let directoryCertificate = utilityFileSystem.directoryCertificates
         let certificateAtPath = directoryCertificate + "/" + host + ".tmp"
@@ -429,4 +436,56 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     func activeAccountCertificate(account: String) {
         (self.p12Data, self.p12Password) = NCPreferences().getClientCertificate(account: account)
     }
+#endif
+    // MARK: - Helper
+
+#if !EXTENSION_FILE_PROVIDER_EXTENSION
+    func helperMetadataSuccess(metadata: tableMetadata) async -> (localFile: tableMetadata?, livePhoto: tableMetadata?, autoUpload: tableAutoUploadTransfer?) {
+        var localFile: tableMetadata?
+        var livePhoto: tableMetadata?
+        var autoUpload: tableAutoUploadTransfer?
+
+        // File System Local file
+        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase)
+
+        if metadata.sessionSelector == NCGlobal.shared.selectorUploadFileNODelete {
+            let fineManeToPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase)
+            await utilityFileSystem.moveFileAsync(atPath: fileNamePath, toPath: fineManeToPath)
+            localFile = tableMetadata(value: metadata)
+        } else {
+            utilityFileSystem.removeFile(atPath: fileNamePath)
+        }
+
+        // Live Photo
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
+        if capabilities.isLivePhotoServerAvailable,
+           metadata.isLivePhoto {
+            livePhoto = tableMetadata(value: metadata)
+        }
+
+        // Auto Upload
+        if metadata.sessionSelector == self.global.selectorUploadAutoUpload,
+           let serverUrlBase = metadata.autoUploadServerUrlBase {
+            autoUpload = tableAutoUploadTransfer(account: metadata.account,
+                                                 serverUrlBase: serverUrlBase,
+                                                 fileName: metadata.fileNameView,
+                                                 assetLocalIdentifier: metadata.assetLocalIdentifier,
+                                                 date: metadata.creationDate as Date)
+        }
+
+        return (localFile: localFile, livePhoto: livePhoto, autoUpload: autoUpload)
+    }
+#endif
+
+#if !EXTENSION
+    @inline(__always)
+    func isInBackground() -> Bool {
+       return isAppInBackground
+    }
+#else
+    @inline(__always)
+    func isInBackground() -> Bool {
+        return false
+    }
+#endif
 }

@@ -35,7 +35,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
     @IBOutlet weak var iconsStackView: UIStackView!
-    
+
     var ocId = ""
     var ocIdTransfer = ""
     var account = ""
@@ -118,9 +118,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         iconsStackView.addBlurBackground(style: .systemMaterial)
         iconsStackView.layer.cornerRadius = 8
         iconsStackView.clipsToBounds = true
-//        iconsStackView.addVibrancyOverlay(using: blur, style: .fill)
-
-//        iconsStackView.addBlurBackground(style: .systemThinMaterialLight)
 
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
         longPressedGesture.minimumPressDuration = 0.5
