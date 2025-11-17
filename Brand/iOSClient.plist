@@ -70,6 +70,8 @@
 	<string>Seventh Star needs photo library access to upload your photos and videos.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Seventh Star needs photo library access to upload your photos and videos.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Location access is not actively used by Seventh Star. This permission is required by included SDKs.</string>
 	<key>NSUserActivityTypes</key>
 	<array>
 		<string>AccountIntent</string>
