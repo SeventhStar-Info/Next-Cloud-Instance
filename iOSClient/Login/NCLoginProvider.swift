@@ -189,13 +189,40 @@ class NCLoginProvider: UIViewController {
     private func createPollingTask(token: String, endpoint: String) -> Task<Void, any Error> {
         let options = NKRequestOptions(customUserAgent: userAgent)
         var grantValues: (urlBase: String, loginName: String, appPassword: String)?
+        let maxPollingDuration: TimeInterval = 600 // 10 minutes
+        let pollingInterval: TimeInterval = 1 // 1 second
+        let maxAttempts = Int(maxPollingDuration / pollingInterval)
 
         return Task { @MainActor in
+            let startTime = Date()
+            var attemptCount = 0
+
             repeat {
                 try Task.checkCancellation()
 
                 grantValues = await poll(token: token, endpoint: endpoint, options: options)
-                try await Task.sleep(nanoseconds: 1_000_000_000) // .seconds() is not supported on iOS 15 yet.
+                attemptCount += 1
+
+                // Check if we've exceeded the maximum polling duration
+                let elapsedTime = Date().timeIntervalSince(startTime)
+                if grantValues == nil && (elapsedTime >= maxPollingDuration || attemptCount >= maxAttempts) {
+                    nkLog(error: "Login polling timed out after \(Int(elapsedTime)) seconds (\(attemptCount) attempts)")
+
+                    let alertController = UIAlertController(
+                        title: NSLocalizedString("_error_", comment: ""),
+                        message: NSLocalizedString("_login_timeout_", comment: "The login request timed out. Please try again."),
+                        preferredStyle: .alert
+                    )
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { [weak self] _ in
+                        self?.navigationController?.popViewController(animated: true)
+                    }))
+                    present(alertController, animated: true)
+                    return
+                }
+
+                if grantValues == nil {
+                    try await Task.sleep(nanoseconds: 1_000_000_000) // .seconds() is not supported on iOS 15 yet.
+                }
             } while grantValues == nil
 
             guard let grantValues else {
@@ -292,5 +319,59 @@ extension NCLoginProvider: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         nkLog(debug: "Web view did finish navigation to \(webView.url?.absoluteString ?? "nil")")
         NCActivityIndicator.shared.stop()
+    }
+
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        nkLog(error: "Web view did fail provisional navigation with error: \(error.localizedDescription)")
+        NCActivityIndicator.shared.stop()
+
+        // Cancel the polling task since the login page couldn't load
+        pollingTask?.cancel()
+
+        let alertController = UIAlertController(
+            title: NSLocalizedString("_error_", comment: ""),
+            message: String(format: NSLocalizedString("_login_page_load_error_", comment: "Failed to load login page: %@"), error.localizedDescription),
+            preferredStyle: .alert
+        )
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { [weak self] _ in
+            self?.navigationController?.popViewController(animated: true)
+        }))
+        present(alertController, animated: true)
+    }
+
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        nkLog(error: "Web view navigation did fail with error: \(error.localizedDescription)")
+        NCActivityIndicator.shared.stop()
+
+        // Cancel the polling task since navigation failed
+        pollingTask?.cancel()
+
+        let alertController = UIAlertController(
+            title: NSLocalizedString("_error_", comment: ""),
+            message: String(format: NSLocalizedString("_login_page_error_", comment: "Login page error: %@"), error.localizedDescription),
+            preferredStyle: .alert
+        )
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { [weak self] _ in
+            self?.navigationController?.popViewController(animated: true)
+        }))
+        present(alertController, animated: true)
+    }
+
+    func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+        nkLog(error: "Web view content process did terminate unexpectedly")
+        NCActivityIndicator.shared.stop()
+
+        // Cancel polling and reload the page
+        pollingTask?.cancel()
+
+        let alertController = UIAlertController(
+            title: NSLocalizedString("_error_", comment: ""),
+            message: NSLocalizedString("_login_page_crashed_", comment: "The login page crashed. Please try again."),
+            preferredStyle: .alert
+        )
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { [weak self] _ in
+            self?.navigationController?.popViewController(animated: true)
+        }))
+        present(alertController, animated: true)
     }
 }

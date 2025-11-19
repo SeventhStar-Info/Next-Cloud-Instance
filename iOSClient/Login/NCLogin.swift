@@ -310,7 +310,11 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         if url.isEmpty { return }
 
         // Check whether baseUrl contain protocol. If not add https:// by default.
-        if url.hasPrefix("https") == false && url.hasPrefix("http") == false {
+        // Also convert http:// to https:// for security
+        if url.hasPrefix("http://") {
+            url = url.replacingOccurrences(of: "http://", with: "https://")
+            nkLog(debug: "Converted HTTP URL to HTTPS: \(url)")
+        } else if url.hasPrefix("https") == false && url.hasPrefix("http") == false {
             url = "https://" + url
         }
         self.baseUrlTextField.text = url
@@ -338,6 +342,19 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                         safariVC.delegate = self
                         safariVC.startPolling(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
                         navigationController?.pushViewController(safariVC, animated: true)
+                    } else {
+                        // Handle login flow V2 error
+                        nkLog(error: "Failed to get login flow V2: \(error.errorDescription)")
+                        loginButton.hideSpinnerAndShowButton()
+                        loginButton.isEnabled = true
+
+                        let alertController = UIAlertController(
+                            title: NSLocalizedString("_error_", comment: ""),
+                            message: error.errorDescription,
+                            preferredStyle: .alert
+                        )
+                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default))
+                        present(alertController, animated: true)
                     }
                 }
             case .failure(let error):
